@@ -1,15 +1,8 @@
 <template>
 
   <div class="flex gap-4 mb-4 items-center" style="margin-bottom: 20px">
-<!--    <el-switch-->
-<!--        v-model="checkOrder"-->
-<!--        size="large"-->
-<!--        active-text="Default"-->
-<!--        inactive-text="DESC"-->
-<!--        style="margin-right: 30px"-->
-<!--    />-->
     <label style="margin-right: 20px">Soft:</label>
-    <el-radio-group v-model="radio"  style="margin-right: 30px">
+    <el-radio-group v-model="radio" style="margin-right: 30px">
       <el-radio :label="3">Date</el-radio>
       <el-radio :label="6">Title</el-radio>
       <el-radio :label="9">Link</el-radio>
@@ -24,11 +17,13 @@
 
   </div>
   <el-table :data="tableData" style="width: 100%" max-height="500">
-    <el-table-column  prop="date" label="Date" width="160" />
+    <el-table-column prop="date" label="Date" width="160"/>
     <el-table-column prop="title" label="Title" width="500"></el-table-column>
-    <el-table-column prop="link" label="Link" width="1000"><template #default="{ row }">
-      <a :href="row.link+row.param" target="_blank">{{ row.link }}</a>
-    </template></el-table-column>
+    <el-table-column prop="link" label="Link" width="1000">
+      <template #default="{ row }">
+        <a :href="row.link+row.param" target="_blank">{{ row.link }}</a>
+      </template>
+    </el-table-column>
     <el-table-column prop="id" label="ID" width="0" :hidden="true"></el-table-column>
     <el-table-column fixed="right" label="Operations" width="120">
       <template #default="scope">
@@ -44,7 +39,8 @@
       </template>
     </el-table-column>
   </el-table>
-  <div class="demo-pagination-block" style="display: flex; flex-direction: column; align-items: center; margin-top: 20px">
+  <div class="demo-pagination-block"
+       style="display: flex; flex-direction: column; align-items: center; margin-top: 20px">
     <el-pagination
         v-model:current-page="currentPage4"
         v-model:page-size="pageSize4"
@@ -61,7 +57,7 @@
 
 <script lang="ts" setup>
 import {onMounted, ref, watch} from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   deleteHistory,
   fetchPageCount,
@@ -69,10 +65,10 @@ import {
   fetchPaginatedHistory,
   fetchPaginatedHistoryBySearch
 } from "@/api/API";
-import { Search } from '@element-plus/icons-vue'
+import {Search} from '@element-plus/icons-vue'
 
 const currentPage4 = ref(1);
-const totalPage = ref(null);
+const totalPage = ref(0);
 const pageSize4 = ref(10);
 const tableData = ref([]);
 
@@ -84,7 +80,7 @@ const radio = ref(3)
 
 onMounted(async () => {
   try {
-    const data = await fetchPaginatedHistory(pageSize4.value,currentPage4.value-1,radio.value);
+    const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
     tableData.value = data;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -94,13 +90,13 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     const data = await fetchPageCount(pageSize4.value);
-    totalPage.value= data*pageSize4.value;
+    totalPage.value = data * pageSize4.value;
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 });
 
-const deleteRow = async (index: number, id:number) => {
+const deleteRow = async (index: number, id: number) => {
   try {
     ElMessageBox.confirm(
         'Do you really want to delete this row?',
@@ -111,7 +107,7 @@ const deleteRow = async (index: number, id:number) => {
           type: 'warning',
         }
     )
-        .then( async () => {
+        .then(async () => {
           ElMessage({
             type: 'success',
             message: 'Delete completed',
@@ -131,100 +127,8 @@ const deleteRow = async (index: number, id:number) => {
 
 }
 
-const handleSizeChange = async (val: number) => {
-  if(input.value==null|| input.value==''){
-    try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1,radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    try {
-      const data = await fetchPageCount(pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
 
-  }
-  else {
-    try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistoryBySearch(input.value,pageSize4.value, currentPage4.value - 1,radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    try {
-      const data = await fetchPageCountBySearch(input.value,pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-}
-
-const handleCurrentChange = async (val: number) => {
-  currentPage4.value = val;
-  if(input.value==null|| input.value=='') {
-    try {
-      const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-  else{
-    try {
-      const data = await fetchPaginatedHistoryBySearch(input.value, pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-}
-
-watch(radio, async (currentValue, oldValue) => {
-  if(input.value==null|| input.value==''){
-    try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    try {
-      const data = await fetchPageCount(pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-
-  }
-  else {
-    try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistoryBySearch(input.value,pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    try {
-      const data = await fetchPageCountBySearch(input.value,pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-});
-
-watch(input, async (currentValue, oldValue) => {
-  if(input.value==null|| input.value==''){
+const fetchPage = async () => {
   try {
     currentPage4.value = 1;
     const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
@@ -239,37 +143,67 @@ watch(input, async (currentValue, oldValue) => {
   } catch (error) {
     console.error('Error fetching data:', error);
   }
-
 }
-else {
+
+const fetchSearch = async () => {
+  try {
+    currentPage4.value = 1;
+    const data = await fetchPaginatedHistoryBySearch(input.value, pageSize4.value, currentPage4.value - 1, radio.value);
+    tableData.value = data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+  try {
+    const data = await fetchPageCountBySearch(input.value, pageSize4.value);
+    totalPage.value = data * pageSize4.value;
+    console.log(totalPage.value);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
+
+const handleSizeChange = async (val: number) => {
+  if (input.value == null || input.value == '') {
+    await fetchPage();
+  } else {
+    await fetchSearch();
+  }
+}
+
+const handleCurrentChange = async (val: number) => {
+  currentPage4.value = val;
+  if (input.value == null || input.value == '') {
     try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistoryBySearch(input.value,pageSize4.value, currentPage4.value - 1, radio.value);
+      const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
       tableData.value = data;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+  } else {
     try {
-      const data = await fetchPageCountBySearch(input.value,pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    try {
-      currentPage4.value = 1;
-      const data = await fetchPaginatedHistoryBySearch(input.value,pageSize4.value, currentPage4.value - 1, radio.value);
+      const data = await fetchPaginatedHistoryBySearch(input.value, pageSize4.value, currentPage4.value - 1, radio.value);
       tableData.value = data;
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-    try {
-      const data = await fetchPageCountBySearch(input.value,pageSize4.value);
-      totalPage.value = data * pageSize4.value;
-      console.log(totalPage.value);
-    } catch (error) {
-      console.error('Error fetching data: ', error);
-    }
+  }
+}
+
+watch(radio, async (currentValue, oldValue) => {
+  if (input.value == null || input.value == '') {
+    await fetchPage();
+  } else {
+    await fetchSearch();
+  }
+});
+
+watch(input, async (currentValue, oldValue) => {
+  if (input.value == null || input.value == '') {
+    await fetchPage();
+  } else {
+    await fetchSearch();
+    await fetchSearch();
   }
 });
 
@@ -281,6 +215,7 @@ else {
 .demo-pagination-block + .demo-pagination-block {
   margin-top: 10px;
 }
+
 .demo-pagination-block .demonstration {
   margin-bottom: 16px;
 }

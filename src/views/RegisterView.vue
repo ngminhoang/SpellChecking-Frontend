@@ -14,10 +14,10 @@
       <el-input v-model="ruleForm.mail"/>
     </el-form-item>
     <el-form-item label="Password" prop="pass">
-      <el-input v-model="ruleForm.pass" type="password" />
+      <el-input v-model="ruleForm.pass" type="password"/>
     </el-form-item>
-    <el-form-item label="Name" >
-      <el-input v-model="ruleForm.name" />
+    <el-form-item label="Name">
+      <el-input v-model="ruleForm.name"/>
     </el-form-item>
     <el-form-item label="Confirm Pass" prop="checkPass">
       <el-input
@@ -27,8 +27,10 @@
       />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="register(ruleForm.mail,ruleForm.pass,ruleForm.checkPass, ruleForm.name, 'ROLE_USER')"
-      >Submit</el-button
+      <el-button type="primary"
+                 @click="register(ruleForm.mail,ruleForm.pass,ruleForm.checkPass, ruleForm.name, 'ROLE_USER')"
+      >Submit
+      </el-button
       >
       <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
     </el-form-item>
@@ -36,10 +38,9 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import { register } from "@/api/API";
-
+import {reactive, ref} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {register} from "@/api/API";
 
 const ruleFormRef = ref<FormInstance>()
 
@@ -86,14 +87,14 @@ const ruleForm = reactive({
   pass: '',
   checkPass: '',
   mail: '',
-  name:''
+  name: ''
 })
 
 const rules = reactive<FormRules<typeof ruleForm>>({
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  checkPass: [{ validator: validatePass2, trigger: 'blur' }],
-  mail: [{ validator: checkMail, trigger: 'blur' }],
-  name: [{ validator: checkName, trigger: 'blur' }],
+  pass: [{validator: validatePass, trigger: 'blur'}],
+  checkPass: [{validator: validatePass2, trigger: 'blur'}],
+  mail: [{validator: checkMail, trigger: 'blur'}],
+  name: [{validator: checkName, trigger: 'blur'}],
 })
 
 const submitForm = (formEl: FormInstance | undefined) => {

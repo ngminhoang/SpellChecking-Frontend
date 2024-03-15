@@ -1,13 +1,14 @@
-import{ useAccountStore } from "@/stores/account";
+import {useAccountStore} from "@/stores/account";
 import router from "@/router";
-import { useWebDataStore } from "@/stores/webdata";
-import { ElMessageBox } from 'element-plus';
+import {useWebDataStore} from "@/stores/webdata";
+import {ElMessageBox} from 'element-plus';
 import {useLoading} from "@/stores/loading";
 import dayjs from "dayjs";
 import {useTitleStore} from "@/stores/title";
-const { startLoading, endLoading } = useLoading();
 
-export const login = async (mail: string, password: string): Promise<string> => {
+const {startLoading, endLoading} = useLoading();
+
+export const login = async (mail: string, password: string) => {
     const account = useAccountStore();
     startLoading();
     try {
@@ -16,7 +17,7 @@ export const login = async (mail: string, password: string): Promise<string> => 
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ mail, password }),
+            body: JSON.stringify({mail, password}),
         });
 
         if (!response.ok) {
@@ -39,7 +40,7 @@ export const login = async (mail: string, password: string): Promise<string> => 
     }
 };
 
-export const getInfo = async (token: string) => {
+export const getInfo = async (token: any) => {
     const account = useAccountStore();
     try {
         const response = await fetch('http://localhost:8080/api/user/info', {
@@ -64,14 +65,12 @@ export const getInfo = async (token: string) => {
 };
 
 
-
-export const register = async (mail: string, password: string,checkPass: string, name: string, role: string): Promise<string> => {
-    if(password!= checkPass){
+export const register = async (mail: string, password: string, checkPass: string, name: string, role: string) => {
+    if (password != checkPass) {
         ElMessageBox.alert('Mật khẩu nhập lại không giống, hãy nhập lại mật khẩu đúng', 'Rất tiếc', {
             confirmButtonText: 'Đồng ý',
             type: 'warning',
         });
-        return;
     }
     const account = useAccountStore();
     startLoading();
@@ -81,7 +80,7 @@ export const register = async (mail: string, password: string,checkPass: string,
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ mail, password, name, role }),
+            body: JSON.stringify({mail, password, name, role}),
         });
 
         if (!response.ok) {
@@ -102,7 +101,7 @@ export const register = async (mail: string, password: string,checkPass: string,
     }
 };
 
-export const spellCheck = async (url: string): Promise<string> => {
+export const spellCheck = async (url: string) => {
     startLoading();
     const dataweb = useWebDataStore();
     const token = localStorage.getItem('token')
@@ -126,7 +125,7 @@ export const spellCheck = async (url: string): Promise<string> => {
         const data = await response.json();
         dataweb.setHeader(data.title);
         dataweb.setBody(data.body);
-        await createHistory(dataweb.header,url, dataweb.body)
+        await createHistory(dataweb.header, url, dataweb.body)
 
     } catch (error) {
         console.error('Check url error:', error);
@@ -134,8 +133,7 @@ export const spellCheck = async (url: string): Promise<string> => {
     }
 };
 
-
-export const updateAccount = async (name, mail, password) => {
+export const updateAccount = async (name: string, mail: string, password: string) => {
     startLoading();
     const account = useAccountStore();
     const token = localStorage.getItem('token')
@@ -157,15 +155,15 @@ export const updateAccount = async (name, mail, password) => {
         }
         endLoading();
         const data = await response.json();
-        if(data==false){
+        if (data == false) {
             ElMessageBox.alert('Có lẽ thông tin bạn cung cấp bị lỗi hoặc không hợp lệ', 'Rất tiếc', {
                 confirmButtonText: 'Đồng ý',
                 type: 'warning',
             });
-        }
-        else {
+        } else {
             await getInfo(token)
-        };
+        }
+        ;
 
     } catch (error) {
         console.error('Check url error:', error);
@@ -173,9 +171,9 @@ export const updateAccount = async (name, mail, password) => {
     }
 };
 
-export const createHistory = async (title: string, link: string , param: string) => {
+export const createHistory = async (title: string, link: string, param: string) => {
     const dataweb = useWebDataStore();
-    const dateTime = new Date(); // Đối tượng ngày và giờ từ TypeScript
+    const dateTime = new Date();
     const date = dayjs(dateTime).format('YYYY-MM-DD HH:mm:ss');
     const token = localStorage.getItem('token')
     try {
@@ -185,7 +183,7 @@ export const createHistory = async (title: string, link: string , param: string)
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            body: JSON.stringify({ date, title, link , param}),
+            body: JSON.stringify({date, title, link, param}),
         });
 
         if (!response.ok) {
@@ -225,7 +223,7 @@ export const deleteHistory = async (id: number) => {
     }
 };
 
-export const fetchPaginatedHistory = async (sizeNumber,pageNumber,typeOrder) => {
+export const fetchPaginatedHistory = async (sizeNumber: number, pageNumber: number, typeOrder: number) => {
     const apiUrl = `http://localhost:8080/api/user/history/page?size=${sizeNumber}&page=${pageNumber}&soft=${typeOrder}`;
     const token = localStorage.getItem('token');
     try {
@@ -250,7 +248,7 @@ export const fetchPaginatedHistory = async (sizeNumber,pageNumber,typeOrder) => 
 };
 
 
-export const fetchPageCount = async (sizeNumber) => {
+export const fetchPageCount = async (sizeNumber: number) => {
     const apiUrl = `http://localhost:8080/api/user/history/page/total?size=${sizeNumber}`;
     const token = localStorage.getItem('token');
     try {
@@ -275,7 +273,7 @@ export const fetchPageCount = async (sizeNumber) => {
 };
 
 
-export const fetchPaginatedHistoryBySearch = async (key,sizeNumber,pageNumber,checkOrder) => {
+export const fetchPaginatedHistoryBySearch = async (key: string, sizeNumber: number, pageNumber: number, checkOrder: number) => {
     const apiUrl = `http://localhost:8080/api/user/history/search?size=${sizeNumber}&page=${pageNumber}&soft=${checkOrder}&key=${key}`;
     const token = localStorage.getItem('token');
     try {
@@ -300,7 +298,7 @@ export const fetchPaginatedHistoryBySearch = async (key,sizeNumber,pageNumber,ch
 };
 
 
-export const fetchPageCountBySearch = async (key,sizeNumber) => {
+export const fetchPageCountBySearch = async (key: string, sizeNumber: number) => {
     const apiUrl = `http://localhost:8080/api/user/history/search/total?size=${sizeNumber}&key=${key}`;
     const token = localStorage.getItem('token');
     try {

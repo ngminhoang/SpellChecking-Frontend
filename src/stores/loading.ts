@@ -1,5 +1,5 @@
-import { ref } from 'vue';
-import { ElLoading } from 'element-plus';
+import {ref} from 'vue';
+import {ElLoading} from 'element-plus';
 
 export function useLoading() {
     const loadingInstance = ref(null);

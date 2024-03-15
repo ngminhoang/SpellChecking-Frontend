@@ -1,5 +1,3 @@
-
-
 <template>
   <el-form
       label-position="left"
@@ -22,7 +20,8 @@
 
     <el-form-item>
       <el-button type="primary" @click=" login(ruleForm.mail,ruleForm.pass)"
-      >Login</el-button
+      >Login
+      </el-button
       >
       <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
     </el-form-item>
@@ -30,18 +29,15 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import {useAccountStore } from "@/stores/account";
+import {reactive, ref} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {useAccountStore} from "@/stores/account";
 import router from '@/router';
 import {login} from "@/api/API";
+
 const account = useAccountStore();
 const ruleFormRef = ref<FormInstance>()
 
-const Login = (mail: any, pass: any)=>{
-  login(mail,pass);
-
-}
 
 const checkMail = (rule: any, value: any, callback: any) => {
   if (!value) {
@@ -60,7 +56,7 @@ const validatePass = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input the password'))
   } else {
-    if (ruleForm.checkPass !== '') {
+    if (ruleForm.checkPass != '') {
       if (!ruleFormRef.value) return
       ruleFormRef.value.validateField('checkPass', () => null)
     }
@@ -74,21 +70,9 @@ const ruleForm = reactive({
 })
 
 const rules = reactive<FormRules<typeof ruleForm>>({
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  mail: [{ validator: checkMail, trigger: 'blur' }],
+  pass: [{validator: validatePass, trigger: 'blur'}],
+  mail: [{validator: checkMail, trigger: 'blur'}],
 })
-
-const submitForm = () => {
-  if (true) {
-      console.log('submit!')
-      account.login();
-      router.push('/main');
-    } 
-    else {
-      console.log('error submit!')
-      return false
-    }
-  }
 
 
 const resetForm = (formEl: FormInstance | undefined) => {

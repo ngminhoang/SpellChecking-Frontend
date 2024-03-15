@@ -2,12 +2,12 @@
   <div class="common-layout">
     <table>
       <tr>
-        <td  style="width: 100px"><h3>Name: </h3></td>
-        <td><h3 style="color: #9cffdb;">{{ account.name }}</h3></td>
+        <td style="width: 100px"><h3>Name: </h3></td>
+        <td><h3 class="highlight">{{ account.name }}</h3></td>
       </tr>
       <tr>
-        <td  style="width: 100px"><h3>Mail: </h3></td>
-        <td><h3 style="color: #9cffdb;">{{ account.mail }}</h3></td>
+        <td style="width: 100px"><h3>Mail: </h3></td>
+        <td><h3 class="highlight">{{ account.mail }}</h3></td>
       </tr>
     </table>
   </div>
@@ -24,7 +24,7 @@
   >
     <span>
       <el-input placeholder="new name" v-model="name"/>
-<!--      <el-input placeholder="new mail" v-model="mail"/>-->
+      <!--      <el-input placeholder="new mail" v-model="mail"/>-->
       <el-input placeholder="new password" v-model="pass"/>
     </span>
     <template #footer>
@@ -40,21 +40,18 @@
 
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import { useAccountStore } from "@/stores/account";
-import { ElMessageBox } from 'element-plus'
+import {reactive, ref} from 'vue'
+import type {FormInstance, FormRules} from 'element-plus'
+import {useAccountStore} from "@/stores/account";
+import {ElMessageBox} from 'element-plus'
 import {login, updateAccount} from "@/api/API";
 
-let dialogVisible = ref(false)
+const dialogVisible = ref(false)
 
 const handleClose = (done: () => void) => {
   ElMessageBox.confirm('Are you sure to close this dialog?')
       .then(() => {
         done()
-      })
-      .catch(() => {
-        // catch error
       })
 }
 
@@ -64,9 +61,27 @@ const mail = ref(account.mail);
 const name = ref('');
 const pass = ref('');
 
-const UpdateAccount = (name:any, mail: any, pass: any)=>{
-  updateAccount(name,mail,pass);
-  dialogVisible = false
+const UpdateAccount = (name: any, mail: any, pass: any) => {
+  updateAccount(name, mail, pass);
+  dialogVisible.value = false
+}
+</script>
+
+
+<style scoped>
+.common-layout {
+  margin: 20px;
 }
 
-</script>
+table {
+  width: 100%;
+}
+
+td {
+  vertical-align: top;
+}
+
+.highlight {
+  color: #9cffdb;
+}
+</style>

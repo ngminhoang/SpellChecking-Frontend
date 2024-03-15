@@ -1,39 +1,26 @@
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 import {onMounted, ref, watch} from 'vue'
 import {fetchPaginatedHistory} from "@/api/API";
-export const useWebDataStore = defineStore("webdata", ()=>{
+
+export const useWebDataStore = defineStore("webdata", () => {
     const header = ref('');
     const body = ref('');
-    const tableData = ref(null);
-    function setTableData(data){
-        tableData.value = data
-    }
-    function setHeader(msg){
+
+    function setHeader(msg: string) {
         header.value = msg
     }
-    function setBody(msg){
+
+    function setBody(msg: string) {
         body.value = msg
     }
-    function clearData(){
-        header.value='';
-        body.value ='';
+
+    function clearData() {
+        header.value = '';
+        body.value = '';
     }
 
-    onMounted(async () => {
-        try {
-            const data = await fetchPaginatedHistory(1);
-            tableData.value = data;
 
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-
-    function setHistoryData(data){
-        body.value = data
-    }
-
-    return{
-        header, body, setHeader, setBody, clearData,setTableData, tableData
+    return {
+        header, body, setHeader, setBody, clearData
     }
 })

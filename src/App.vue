@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterLink, RouterView} from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue';
-import { useTitleStore } from './stores/title'
+import {useTitleStore} from './stores/title'
+
 const title = useTitleStore();
-import {useAccountStore } from './stores/account';
+import {useAccountStore} from './stores/account';
 import router from '@/router';
 import Background from "@/components/icons/Background.vue";
 
 const account = useAccountStore();
-const logout = () =>{
+const logout = () => {
   localStorage.removeItem('token');
   account.notLogin();
   router.push('/about')
@@ -16,8 +17,8 @@ const logout = () =>{
 
 function getImgUrl(pet: any) {
 
-    return '../public/' + pet + ".png"
-  }
+  return '../public/' + pet + ".png"
+}
 </script>
 
 <template>
@@ -27,13 +28,17 @@ function getImgUrl(pet: any) {
     <div>
       <div style="margin-top: 80px; top: 0; left: 0; position: fixed; margin-left: 30px">
         <div>
-          <a type="text" target="_blank" href="https://www.facebook.com/duriu.team"><img class="logo" src="../public/facebook.png" style="margin-right: 10px;"/></a>
+          <a type="text" target="_blank" href="https://www.facebook.com/duriu.team"><img class="logo"
+                                                                                         src="../public/facebook.png"
+                                                                                         style="margin-right: 10px;"/></a>
         </div>
         <div>
           <a type="text" target="_blank"><img class="logo" src="../public/insta.png" style="margin-right: 10px;"/></a>
         </div>
         <div>
-          <a type="text" target="_blank" href="https://www.tiktok.com/@duriu.team"><img class="logo" src="../public/tiktok.png" style="margin-right: 10px;"/></a>
+          <a type="text" target="_blank" href="https://www.tiktok.com/@duriu.team"><img class="logo"
+                                                                                        src="../public/tiktok.png"
+                                                                                        style="margin-right: 10px;"/></a>
         </div>
         <div>
           <a type="text" target="_blank"><img class="logo" src="../public/twitter.png" style="margin-right: 10px;"/></a>
@@ -41,11 +46,11 @@ function getImgUrl(pet: any) {
       </div>
 
       <header>
-        <img alt="Vue logo" class="logo" :src='getImgUrl(title.reactImg)' width="125" height="125" />
+        <img alt="Vue logo" class="logo" :src='getImgUrl(title.reactImg)' width="125" height="125"/>
 
         <div class="wrapper">
           <div>
-            <HelloWorld :msg="title.title" />
+            <HelloWorld :msg="title.title"/>
           </div>
           <nav v-if='!account.isLogin'>
             <RouterLink to="/about">About</RouterLink>
@@ -53,7 +58,7 @@ function getImgUrl(pet: any) {
             <RouterLink to="/register">Register</RouterLink>
           </nav>
           <nav v-else>
-<!--            <RouterLink to="/about">About</RouterLink>-->
+            <!--            <RouterLink to="/about">About</RouterLink>-->
             <RouterLink to="/main">Main</RouterLink>
             <RouterLink to="/setting">Setting</RouterLink>
             <a @click="logout()">Logout</a>
@@ -62,7 +67,7 @@ function getImgUrl(pet: any) {
       </header>
     </div>
     <div style="margin-top: 50px">
-      <RouterView />
+      <RouterView/>
 
     </div>
   </div>
