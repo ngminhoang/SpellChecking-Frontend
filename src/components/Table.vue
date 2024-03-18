@@ -1,11 +1,12 @@
+
 <template>
 
   <div class="flex gap-4 mb-4 items-center" style="margin-bottom: 20px">
     <label style="margin-right: 20px">Soft:</label>
-    <el-radio-group v-model="radio" style="margin-right: 30px">
-      <el-radio :label="3">Date</el-radio>
-      <el-radio :label="6">Title</el-radio>
-      <el-radio :label="9">Link</el-radio>
+    <el-radio-group @input="fetchSearch" v-model="radio" style="margin-right: 30px">
+      <el-radio :label="dateSort">Date</el-radio>
+      <el-radio :label="titleSort">Title</el-radio>
+      <el-radio :label="linkSort">Link</el-radio>
     </el-radio-group>
     <el-input
         v-model="input"
@@ -13,11 +14,12 @@
         size="large"
         placeholder="Search"
         :suffix-icon="Search"
+        @input="fetchDoubleSearch"
     />
 
   </div>
   <el-table :data="tableData" style="width: 100%" max-height="500">
-    <el-table-column prop="date" label="Date" width="160"/>
+    <el-table-column prop="createdDate" label="Date" width="160"/>
     <el-table-column prop="title" label="Title" width="500"></el-table-column>
     <el-table-column prop="link" label="Link" width="1000">
       <template #default="{ row }">
@@ -42,8 +44,8 @@
   <div class="demo-pagination-block"
        style="display: flex; flex-direction: column; align-items: center; margin-top: 20px">
     <el-pagination
-        v-model:current-page="currentPage4"
-        v-model:page-size="pageSize4"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
         :page-sizes="100"
         :small="small"
         :background="background"
@@ -56,156 +58,92 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref, watch} from 'vue';
+import {onMounted, ref} from 'vue';
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {
   deleteHistory,
-  fetchPageCount,
-  fetchPageCountBySearch,
-  fetchPaginatedHistory,
   fetchPaginatedHistoryBySearch
 } from "@/api/API";
 import {Search} from '@element-plus/icons-vue'
+import {dateSort, titleSort, linkSort} from "@/api/APIUrl";
 
-const currentPage4 = ref(1);
-const totalPage = ref(0);
-const pageSize4 = ref(10);
+const currentPage = ref(1);
+const totalPage = ref(10);
+const pageSize = ref(10);
 const tableData = ref([]);
 
-const checkOrder = ref(true);
 
 const input = ref('')
 
 const radio = ref(3)
 
 onMounted(async () => {
-  try {
-    const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
-    tableData.value = data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+  await fetchSearch();
 });
 
-onMounted(async () => {
-  try {
-    const data = await fetchPageCount(pageSize4.value);
-    totalPage.value = data * pageSize4.value;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-});
 
 const deleteRow = async (index: number, id: number) => {
-  try {
-    ElMessageBox.confirm(
-        'Do you really want to delete this row?',
-        'Warning',
-        {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-          type: 'warning',
-        }
-    )
-        .then(async () => {
-          ElMessage({
-            type: 'success',
-            message: 'Delete completed',
-          });
-          const data = await deleteHistory(id);
-          tableData.value.splice(index, 1);
+  ElMessageBox.confirm(
+      'Do you really want to delete this row?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(async () => {
+        ElMessage({
+          type: 'success',
+          message: 'Delete completed',
+        });
+        const data = await deleteHistory(id);
+        tableData.value.splice(index, 1);
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Delete canceled',
         })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: 'Delete canceled',
-          })
-        })
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+      })
 
 }
 
-
-const fetchPage = async () => {
-  try {
-    currentPage4.value = 1;
-    const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
-    tableData.value = data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-  try {
-    const data = await fetchPageCount(pageSize4.value);
-    totalPage.value = data * pageSize4.value;
-    console.log(totalPage.value);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-}
 
 const fetchSearch = async () => {
-  try {
-    currentPage4.value = 1;
-    const data = await fetchPaginatedHistoryBySearch(input.value, pageSize4.value, currentPage4.value - 1, radio.value);
-    tableData.value = data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-  try {
-    const data = await fetchPageCountBySearch(input.value, pageSize4.value);
-    totalPage.value = data * pageSize4.value;
-    console.log(totalPage.value);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+  currentPage.value = 1;
+  fetchPage();
+}
+
+const fetchPage = async () => {
+  const data = await fetchPaginatedHistoryBySearch(input.value, pageSize.value, currentPage.value - 1, radio.value);
+  tableData.value = data.histories;
+  totalPage.value = data.totalPage * pageSize.value;
+}
+
+const fetchDoubleSearch = async () => {
+  await fetchSearch();
+  await fetchSearch();
 }
 
 
 const handleSizeChange = async (val: number) => {
-  if (input.value == null || input.value == '') {
-    await fetchPage();
-  } else {
-    await fetchSearch();
-  }
+  pageSize.value = val;
+  await fetchSearch();
 }
 
 const handleCurrentChange = async (val: number) => {
-  currentPage4.value = val;
-  if (input.value == null || input.value == '') {
-    try {
-      const data = await fetchPaginatedHistory(pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  } else {
-    try {
-      const data = await fetchPaginatedHistoryBySearch(input.value, pageSize4.value, currentPage4.value - 1, radio.value);
-      tableData.value = data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
+  currentPage.value = val;
+  await fetchPage();
 }
 
-watch(radio, async (currentValue, oldValue) => {
-  if (input.value == null || input.value == '') {
-    await fetchPage();
-  } else {
-    await fetchSearch();
-  }
-});
+// watch(radio, async (currentValue, oldValue) => {
+//   await fetchSearch();
+// });
 
-watch(input, async (currentValue, oldValue) => {
-  if (input.value == null || input.value == '') {
-    await fetchPage();
-  } else {
-    await fetchSearch();
-    await fetchSearch();
-  }
-});
+// watch(input, async (currentValue, oldValue) => {
+//   await fetchSearch();
+// });
 
 
 </script>

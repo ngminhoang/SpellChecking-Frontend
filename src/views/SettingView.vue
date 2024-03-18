@@ -40,11 +40,10 @@
 
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue'
-import type {FormInstance, FormRules} from 'element-plus'
+import {ref} from 'vue'
 import {useAccountStore} from "@/stores/account";
 import {ElMessageBox} from 'element-plus'
-import {login, updateAccount} from "@/api/API";
+import {updateAccount} from "@/api/API";
 
 const dialogVisible = ref(false)
 

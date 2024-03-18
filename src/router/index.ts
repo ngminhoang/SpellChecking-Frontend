@@ -1,42 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
-import { useAccountStore } from "@/stores/account";
-import { useWebDataStore } from "@/stores/webdata";
-import { getInfo } from "@/api/API";
-import { useTitleStore } from "@/stores/title";
+import {useAccountStore} from "@/stores/account";
+import {useWebDataStore} from "@/stores/webdata";
+import {getInfo} from "@/api/API";
+import main from "@/router/main";
+import login from "@/router/login";
+import register from "@/router/register";
+import setting from "@/router/setting";
+import about from "@/router/about";
 
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
-        {
-            path: '/login',
-            name: 'login',
-            component: LoginView
-        },
-        {
-            path: '/about',
-            name: 'about',
-            component: () => import('../views/AboutView.vue')
-        },
-        {
-            path: '/register',
-            name: 'register',
-            component: RegisterView
-        },
-        {
-            path: '/main',
-            name: 'main',
-            component: () => import('../views/MainView.vue'),
-            meta: { requiresAuth: true }
-        },
-        {
-            path: '/setting',
-            name: 'setting',
-            component: () => import('../views/SettingView.vue'),
-            meta: { requiresAuth: true }
-        },
+        login,
+        about,
+        register,
+        main,
+        setting,
     ]
 })
 
@@ -47,7 +29,7 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         const isAuthenticated = localStorage.getItem('token');
         if (!isAuthenticated) {
-            next({ name: 'login' });
+            next({name: login.name});
         } else {
             if (!isTokenExpired(isAuthenticated)) {
                 account.login();
@@ -58,11 +40,11 @@ router.beforeEach((to, from, next) => {
             } else {
                 localStorage.removeItem('token');
                 account.notLogin();
-                next({ name: 'login' });
+                next({name: login.name});
             }
         }
     } else {
-        if (to.path == "/") next({ name: 'about' });
+        if (to.path == "/") next({name: about.name});
         account.notLogin();
         next();
     }

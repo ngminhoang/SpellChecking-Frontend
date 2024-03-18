@@ -1,7 +1,7 @@
 <script setup>
 
 import {ref} from 'vue'
-import {createHistory, fetchPaginatedHistory, spellCheck} from "@/api/API.ts";
+import { spellCheck} from "@/api/API.ts";
 import {useWebDataStore} from "@/stores/webdata";
 import Table from "@/components/Table.vue";
 

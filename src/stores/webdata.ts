@@ -1,6 +1,5 @@
 import {defineStore} from "pinia";
 import {onMounted, ref, watch} from 'vue'
-import {fetchPaginatedHistory} from "@/api/API";
 
 export const useWebDataStore = defineStore("webdata", () => {
     const header = ref('');
